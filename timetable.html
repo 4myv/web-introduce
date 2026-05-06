@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>시간표</title>
+
+<style>
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    background:#f4f6f9;
+    font-family:sans-serif;
+    display:flex;
+    justify-content:center;
+    padding: 0;
+}
+
+.container {
+    background:white;
+    padding: 1.5vh;
+    border-radius:15px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.1);
+    position:relative;
+    overflow: hidden;
+    width:95vw;                 
+    height:95vh;                
+    display:flex;               
+    flex-direction:column;
+}
+
+h2 {
+    font-size:clamp(16px, 1.5vw, 28px);
+    margin:0 0 1vh 0;
+}
+
+.current-time {
+    position:absolute;
+    top:12px;
+    right:20px;
+    font-weight:bold;
+}
+
+.remaining-time {
+    position:absolute;
+    top:35px;
+    right:20px;
+    color:#4CAF50;
+    font-weight:bold;
+}
+
+table {
+    border-collapse:collapse;
+    width: 100%;
+    height: 100%;
+    table-layout: fixed;
+    text-align:center;
+    font-size:clamp(12px, 1vw, 16px);
+}
+
+th, td {
+    border:1px solid #8d8d8d;
+    padding:0.5vh;
+    font-size: clamp(12px, 0.9vw, 18px)
+}
+
+th {
+    background:#333;
+    color:white;
+}
+
+.time { background:#222; color:white; font-size:clamp(11px, 0.8vw, 16px); }
+.break { background:#fafafa; color:#666; }
+.lunch { background:#ffe8a3; }
+
+.now {
+    outline:4px solid #4CAF50;
+    outline-offset:-3px;
+    background:#E8F5E9 !important;
+}
+
+/* 과목 색 */
+.sys { background:#FFD9D9; }
+.app { background:#D9E5FF; }
+.lit { background:#FFF5CC; }
+.his { background:#D9FFD9; }
+.eng { background:#E6CCFF; }
+.art { background:#FFE6CC; }
+.data { background:#CCFFFF; }
+.sport { background:#F0E68C; }
+.free { background:#EEE; }
+.club { background:#FFCCE5; }
+
+/* 점심 버튼 정렬 */
+.lunch-box {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.lunch-box span {
+    margin-left: 43%;
+}
+
+/* 버튼 */
+#mealBtn {
+    padding:6px 12px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+#mealBtn:hover {
+    background:#45a049;
+}
+
+/* 모달 */
+.modal {
+    display:none;
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.5);
+    top:0;
+    left:0;
+}
+
+.modal-content {
+    background:white;
+    width:300px;
+    margin:15% auto;
+    padding:20px;
+    border-radius:10px;
+    text-align:center;
+}
+
+.close {
+    float:right;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<div class="current-time" id="clock"></div>
+<div class="remaining-time" id="remain"></div>
+
+<h2>성일정보고등학교 📚 2-11 시간표</h2>
+
+<table id="timetable">
+<tr>
+<th>교시</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th>
+</tr>
+
+<tr data-start="09:00" data-end="09:50">
+<td class="time">1교시<br>(09:00~09:50)</td>
+<td class="data">자료 구조</td><td class="sys">시스템 프로그래밍</td><td class="sys">시스템 프로그래밍</td><td class="app">응용 프로그래밍 개발</td><td class="sport">스포츠 문화</td>
+</tr>
+
+<tr class="break" data-start="09:50" data-end="10:00">
+<td>쉬는시간<br>(09:50~10:00)</td><td colspan="5">휴식</td>
+</tr>
+
+<tr data-start="10:00" data-end="10:50">
+<td class="time">2교시<br>(10:00~10:50)</td>
+<td class="app">응용 프로그래밍 개발</td><td class="his">한국사1</td><td class="art">미술</td><td class="lit">문학</td><td class="app">응용 프로그래밍 개발</td>
+</tr>
+
+<tr class="break" data-start="10:50" data-end="11:00">
+<td>쉬는시간<br>(10:50~11:00)</td><td colspan="5">휴식</td>
+</tr>
+
+<tr data-start="11:00" data-end="11:50">
+<td class="time">3교시<br>(11:00~11:50)</td>
+<td class="lit">문학</td><td class="sys">시스템 프로그래밍</td><td class="app">응용 프로그래밍 개발</td><td class="sys">시스템 프로그래밍</td><td class="app">응용 프로그래밍 개발</td>
+</tr>
+
+<tr class="break" data-start="11:50" data-end="12:00">
+<td>쉬는시간<br>(11:50~12:00)</td><td colspan="5">휴식</td>
+</tr>
+
+<tr data-start="12:00" data-end="12:50">
+<td class="time">4교시<br>(12:00~12:50)</td>
+<td class="his">한국사1</td><td class="app">응용 프로그래밍 개발</td><td class="app">응용 프로그래밍 개발</td><td class="sys">시스템 프로그래밍</td><td class="lit">문학</td>
+</tr>
+
+<tr class="lunch" data-start="12:50" data-end="13:50">
+<td>점심시간</td>
+<td colspan="5">
+<div class="lunch-box">
+<span>🍱 점심시간</span>
+<button id="mealBtn">급식 보기</button>
+</div>
+</td>
+</tr>
+
+<tr data-start="13:50" data-end="14:40">
+<td class="time">5교시<br>(13:50~14:40)</td>
+<td class="sys">시스템 프로그래밍</td><td class="eng">영어1</td><td class="eng">영어1</td><td class="his">한국사1</td><td class="club">창체</td>
+</tr>
+
+<tr class="break" data-start="14:40" data-end="14:50">
+<td>쉬는시간<br>(14:40~14:50)</td><td colspan="5">휴식</td>
+</tr>
+
+<tr data-start="14:50" data-end="15:40">
+<td class="time">6교시<br>(14:50~15:40)</td>
+<td class="sys">시스템 프로그래밍</td><td class="art">미술</td><td class="free">자율</td><td class="data">자료 구조</td><td class="club">창체</td>
+</tr>
+
+<tr class="break" data-start="15:40" data-end="15:50">
+<td>쉬는시간<br>(15:40~15:50)</td><td colspan="5">휴식</td>
+</tr>
+
+<tr data-start="15:50" data-end="16:40">
+<td class="time">7교시<br>(15:50~16:40)</td>
+<td class="sys">시스템 프로그래밍</td><td></td><td></td><td class="eng">영어1</td><td></td>
+</tr>
+</table>
+</div>
+
+<!-- 모달 -->
+<div id="mealModal" class="modal">
+<div class="modal-content">
+<span class="close" onclick="closeMeal()">X</span>
+<h3>오늘의 급식</h3>
+<div id="mealContent">불러오는 중...</div>
+</div>
+</div>
+
+<script>
+    function updateTime() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const s = String(now.getSeconds()).padStart(2,'0');
+    const current = h + ":" + m;
+
+    document.getElementById("clock").innerText = "현재 시간: " + h + ":" + m + ":" + s;
+
+    const day = now.getDay();
+    let found = false;
+
+    document.querySelectorAll("#timetable tr").forEach(row => {
+        row.classList.remove("now");
+
+        const start = row.dataset.start;
+        const end = row.dataset.end;
+
+        if(!start || !end) return;
+
+        if(current >= start && current < end) {
+            found = true;
+
+            let [eh, em] = end.split(":");
+            let endDate = new Date();
+            endDate.setHours(eh, em, 0);
+
+            let diff = Math.floor((endDate - now) / 1000);
+            let min = Math.floor(diff / 60);
+            let sec = diff % 60;
+
+            document.getElementById("remain").innerText =
+                "남은 시간: " + min + "분 " + sec + "초";
+
+            if(row.classList.contains("break") || row.classList.contains("lunch")){
+                row.classList.add("now");
+            } else if(day >= 1 && day <= 5) {
+                row.children[day].classList.add("now");
+            }
+        }
+    });
+
+    if(!found){
+        document.getElementById("remain").innerText = "수업 종료";
+    }
+}
+
+setInterval(updateTime,1000);
+updateTime();
+
+const KEY="cf46b6c6cebe44c2bc3499acb6d1dd03";
+const OFFICE="J10";
+const SCHOOL="7530591";
+
+/* 버튼 이벤트 */
+window.onload=function(){
+    document.getElementById("mealBtn").addEventListener("click", function(e){
+        e.stopPropagation();
+        openMeal();
+    });
+};
+
+/* 팝업 */
+function openMeal(){
+    document.getElementById("mealModal").style.display="block";
+    loadMeal();
+}
+function closeMeal(){
+    document.getElementById("mealModal").style.display="none";
+}
+
+/* 급식 */
+function loadMeal(){
+    const today=new Date();
+    const ymd=today.toISOString().slice(0,10).replace(/-/g,"");
+
+    fetch(`https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=${KEY}&Type=json&ATPT_OFCDC_SC_CODE=${OFFICE}&SD_SCHUL_CODE=${SCHOOL}&MLSV_YMD=${ymd}`)
+    .then(res=>res.json())
+    .then(data=>{
+        if(!data.mealServiceDietInfo){
+            document.getElementById("mealContent").innerText="급식 없음";
+            return;
+        }
+
+        let meal=data.mealServiceDietInfo[1].row[0].DDISH_NM;
+        meal=meal.replace(/<br\/>/g,"<br>")
+                .replace(/\d+\./g,"")
+                .replace(/\([0-9.]+\)/g,"");
+
+        document.getElementById("mealContent").innerHTML=meal;
+    })
+    .catch(()=>{
+        document.getElementById("mealContent").innerText="불러오기 실패";
+    });
+}
+</script>
+
+</body>
+</html>
